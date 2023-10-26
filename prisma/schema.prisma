@@ -8,21 +8,231 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  email     String     @unique
-  hash      String
-  firstName String?
-  lastName  String?
-  bookmark  Bookmark[]
+  id               Int                @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  email            String             @unique
+  hash             String
+  address          String?
+  phone            String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  bookmark         Bookmark[]
+  Order            Order[]
+  ShippingAddress  ShippingAddress[]
+  ProductReview    ProductReview[]
+  CouponCodeUsed   CouponCodeUsed[]
+  LoginHistory     LoginHistory[]
+  AuditTrail       AuditTrail[]
+  FavouriteProduct FavouriteProduct[]
+  Wishlist         Wishlist[]
+  UserRating       UserRating[]
 
   @@map("users")
 }
 
+model Product {
+  id                 Int                @id @default(autoincrement())
+  productName        String
+  productDescription String?
+  price              Int
+  inventoryQuantity  Int
+  imageUrl           String?
+  categoryId         Int
+  category           Category           @relation(fields: [categoryId], references: [id])
+  subcategoryId      Int
+  subCategory        SubCategory        @relation(fields: [subcategoryId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  OrderDetail        OrderDetail[]
+  ProductReview      ProductReview[]
+  FavouriteProduct   FavouriteProduct[]
+  Wishlist           Wishlist[]
+}
+
+model Category {
+  id           Int           @id @default(autoincrement())
+  categoryName String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  subCategory  SubCategory[]
+  product      Product[]
+}
+
+model SubCategory {
+  id              Int       @id @default(autoincrement())
+  subcategoryName String
+  categoryId      Int
+  category        Category  @relation(fields: [categoryId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  product         Product[]
+}
+
+model Order {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+  orderDate   DateTime
+  orderStatus Int
+  totalAmount Float
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  OrderDetail OrderDetail[]
+}
+
+model OrderDetail {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  subTotal  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ShippingAddress {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  stressAddress String
+  city          String
+  state         String
+  country       String
+  postalCode    String
+  phone         String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ProductReview {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  rating     Int
+  reviewText String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CouponCode {
+  id             Int              @id @default(autoincrement())
+  code           String
+  discountType   Int
+  discountValue  Float
+  limit          Int
+  expirationDate DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  CouponCodeUsed CouponCodeUsed[]
+}
+
+model CouponCodeUsed {
+  id           Int        @id @default(autoincrement())
+  couponCodeId Int
+  couponCode   CouponCode @relation(fields: [couponCodeId], references: [id])
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  usedCount    Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model LoginHistory {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  loginTime   DateTime
+  logooutTime DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditTrail {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  eventDescription String
+  eventType        Int
+  eventTimestamp   DateTime
+}
+
+model FavouriteProduct {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Staff {
+  id          Int          @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String       @unique
+  password    String
+  hash        String
+  deptId      Int
+  department  Department   @relation(fields: [deptId], references: [id])
+  dateOfBirth DateTime
+  address     String
+  phone       String
+  dateOfHire  DateTime
+  status      String
+  salary      Float
+  roleId      Int
+  role        Role         @relation(fields: [roleId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  UserRating  UserRating[]
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  role        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Staff       Staff[]
+}
+
+model Department {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Staff     Staff[]
+}
+
+model UserRating {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  staffId        Int
+  staff          Staff    @relation(fields: [staffId], references: [id])
+  rating         Float
+  rattingComment String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model Bookmark {
   id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now()) @db.Timestamptz()
+  createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String?
   description String?
