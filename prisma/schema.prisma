@@ -17,7 +17,6 @@ model User {
   phone            String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  bookmark         Bookmark[]
   Order            Order[]
   ShippingAddress  ShippingAddress[]
   ProductReview    ProductReview[]
@@ -48,6 +47,8 @@ model Product {
   ProductReview      ProductReview[]
   FavouriteProduct   FavouriteProduct[]
   Wishlist           Wishlist[]
+
+  @@map("products")
 }
 
 model Category {
@@ -57,6 +58,8 @@ model Category {
   updatedAt    DateTime      @updatedAt
   subCategory  SubCategory[]
   product      Product[]
+
+  @@map("categories")
 }
 
 model SubCategory {
@@ -67,6 +70,8 @@ model SubCategory {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   product         Product[]
+
+  @@map("subCategories")
 }
 
 model Order {
@@ -79,6 +84,8 @@ model Order {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   OrderDetail OrderDetail[]
+
+  @@map("orders")
 }
 
 model OrderDetail {
@@ -91,13 +98,16 @@ model OrderDetail {
   subTotal  Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("orderDetails")
 }
 
 model ShippingAddress {
   id            Int      @id @default(autoincrement())
   userId        Int
   user          User     @relation(fields: [userId], references: [id])
-  stressAddress String
+  name          String
+  street        String
   city          String
   state         String
   country       String
@@ -105,6 +115,8 @@ model ShippingAddress {
   phone         String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@map("shippingAddresses")
 }
 
 model ProductReview {
@@ -117,6 +129,8 @@ model ProductReview {
   reviewText String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@map("productReviews")
 }
 
 model CouponCode {
@@ -129,6 +143,8 @@ model CouponCode {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   CouponCodeUsed CouponCodeUsed[]
+
+  @@map("couponCodes")
 }
 
 model CouponCodeUsed {
@@ -140,6 +156,8 @@ model CouponCodeUsed {
   usedCount    Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  @@map("couponCodesUsed")
 }
 
 model LoginHistory {
@@ -150,6 +168,8 @@ model LoginHistory {
   logooutTime DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("loginHistories")
 }
 
 model AuditTrail {
@@ -159,6 +179,8 @@ model AuditTrail {
   eventDescription String
   eventType        Int
   eventTimestamp   DateTime
+
+  @@map("auditTrails")
 }
 
 model FavouriteProduct {
@@ -168,6 +190,8 @@ model FavouriteProduct {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+
+  @@map("favouriteProducts")
 }
 
 model Wishlist {
@@ -177,6 +201,8 @@ model Wishlist {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+
+  @@map("wishlists")
 }
 
 model Staff {
@@ -184,7 +210,6 @@ model Staff {
   firstName   String
   lastName    String
   email       String       @unique
-  password    String
   hash        String
   deptId      Int
   department  Department   @relation(fields: [deptId], references: [id])
@@ -192,13 +217,23 @@ model Staff {
   address     String
   phone       String
   dateOfHire  DateTime
-  status      String
+  statusId    Int
+  status      Status       @relation(fields: [statusId], references: [id])
   salary      Float
   roleId      Int
   role        Role         @relation(fields: [roleId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   UserRating  UserRating[]
+
+  @@map("staffs")
+}
+
+model Status {
+  id         Int    @id @default(autoincrement())
+  statusName String
+
+  Staff Staff[]
 }
 
 model Role {
@@ -208,6 +243,8 @@ model Role {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Staff       Staff[]
+
+  @@map("roles")
 }
 
 model Department {
@@ -216,6 +253,8 @@ model Department {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Staff     Staff[]
+
+  @@map("departments")
 }
 
 model UserRating {
@@ -228,17 +267,6 @@ model UserRating {
   rattingComment String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-}
 
-model Bookmark {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String?
-  description String?
-  link        String?
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@map("bookmarks")
+  @@map("userRatings")
 }
