@@ -13,6 +13,7 @@ import { StatusModule } from './status/status.module';
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
+import { AppController } from './app.controller';
 
 @Module({
     imports: [
@@ -31,5 +32,6 @@ import { ShippingAddressModule } from './shipping-address/shipping-address.modul
         OrderDetailModule,
         ShippingAddressModule,
     ],
+    controllers: [AppController]
 })
 export class AppModule {}

@@ -41,3 +41,5 @@ lerna-debug.log*
 
 # Other
 /db-structure.txt
+.vercel
+vercel.json
