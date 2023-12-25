@@ -1,33 +1,32 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
   id               Int                @id @default(autoincrement())
-  firstName        String
-  lastName         String
-  email            String             @unique
-  hash             String
-  address          String?
-  phone            String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  Order            Order[]
-  ShippingAddress  ShippingAddress[]
-  ProductReview    ProductReview[]
-  CouponCodeUsed   CouponCodeUsed[]
-  LoginHistory     LoginHistory[]
+  email            String             @unique
+  hash             String
+  firstName        String
+  lastName         String
+  address          String?
+  phone            String
   AuditTrail       AuditTrail[]
+  CouponCodeUsed   CouponCodeUsed[]
   FavouriteProduct FavouriteProduct[]
-  Wishlist         Wishlist[]
+  LoginHistory     LoginHistory[]
+  Order            Order[]
+  ProductReview    ProductReview[]
+  ShippingAddress  ShippingAddress[]
   UserRating       UserRating[]
+  Wishlist         Wishlist[]
 
   @@map("users")
 }
@@ -40,14 +39,14 @@ model Product {
   inventoryQuantity  Int
   imageUrl           String?
   categoryId         Int
-  category           Category           @relation(fields: [categoryId], references: [id])
   subcategoryId      Int
-  subCategory        SubCategory        @relation(fields: [subcategoryId], references: [id])
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
+  FavouriteProduct   FavouriteProduct[]
   OrderDetail        OrderDetail[]
   ProductReview      ProductReview[]
-  FavouriteProduct   FavouriteProduct[]
+  category           Category           @relation(fields: [categoryId], references: [id])
+  subCategory        SubCategory        @relation(fields: [subcategoryId], references: [id])
   Wishlist           Wishlist[]
 
   @@map("products")
@@ -58,8 +57,8 @@ model Category {
   categoryName String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  subCategory  SubCategory[]
   product      Product[]
+  subCategory  SubCategory[]
 
   @@map("categories")
 }
@@ -68,10 +67,10 @@ model SubCategory {
   id              Int       @id @default(autoincrement())
   subcategoryName String
   categoryId      Int
-  category        Category  @relation(fields: [categoryId], references: [id])
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   product         Product[]
+  category        Category  @relation(fields: [categoryId], references: [id])
 
   @@map("subCategories")
 }
@@ -79,13 +78,13 @@ model SubCategory {
 model Order {
   id          Int           @id @default(autoincrement())
   userId      Int
-  user        User          @relation(fields: [userId], references: [id])
   orderDate   DateTime
   orderStatus Int
   totalAmount Float
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   OrderDetail OrderDetail[]
+  user        User          @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
@@ -93,30 +92,30 @@ model Order {
 model OrderDetail {
   id        Int      @id @default(autoincrement())
   orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id])
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   subTotal  Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@map("orderDetails")
 }
 
 model ShippingAddress {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  name          String
-  street        String
-  city          String
-  state         String
-  country       String
-  postalCode    String
-  phone         String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  city       String
+  state      String
+  country    String
+  postalCode String
+  phone      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  street     String
+  name       String
+  user       User     @relation(fields: [userId], references: [id])
 
   @@map("shippingAddresses")
 }
@@ -124,13 +123,13 @@ model ShippingAddress {
 model ProductReview {
   id         Int      @id @default(autoincrement())
   productId  Int
-  product    Product  @relation(fields: [productId], references: [id])
   userId     Int
-  user       User     @relation(fields: [userId], references: [id])
   rating     Int
   reviewText String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
   @@map("productReviews")
 }
@@ -152,12 +151,12 @@ model CouponCode {
 model CouponCodeUsed {
   id           Int        @id @default(autoincrement())
   couponCodeId Int
-  couponCode   CouponCode @relation(fields: [couponCodeId], references: [id])
   userId       Int
-  user         User       @relation(fields: [userId], references: [id])
   usedCount    Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  couponCode   CouponCode @relation(fields: [couponCodeId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
 
   @@map("couponCodesUsed")
 }
@@ -165,11 +164,11 @@ model CouponCodeUsed {
 model LoginHistory {
   id          Int      @id @default(autoincrement())
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
   loginTime   DateTime
   logooutTime DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
 
   @@map("loginHistories")
 }
@@ -177,10 +176,10 @@ model LoginHistory {
 model AuditTrail {
   id               Int      @id @default(autoincrement())
   userId           Int
-  user             User     @relation(fields: [userId], references: [id])
   eventDescription String
   eventType        Int
   eventTimestamp   DateTime
+  user             User     @relation(fields: [userId], references: [id])
 
   @@map("auditTrails")
 }
@@ -188,10 +187,10 @@ model AuditTrail {
 model FavouriteProduct {
   id        Int      @id @default(autoincrement())
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@map("favouriteProducts")
 }
@@ -199,10 +198,10 @@ model FavouriteProduct {
 model Wishlist {
   id        Int      @id @default(autoincrement())
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@map("wishlists")
 }
@@ -214,28 +213,27 @@ model Staff {
   email       String       @unique
   hash        String
   deptId      Int
-  department  Department   @relation(fields: [deptId], references: [id])
   dateOfBirth DateTime
   address     String
   phone       String
   dateOfHire  DateTime
-  statusId    Int
-  status      Status       @relation(fields: [statusId], references: [id])
   salary      Float
   roleId      Int
-  role        Role         @relation(fields: [roleId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  statusId    Int
+  department  Department   @relation(fields: [deptId], references: [id])
+  role        Role         @relation(fields: [roleId], references: [id])
+  status      Status       @relation(fields: [statusId], references: [id])
   UserRating  UserRating[]
 
   @@map("staffs")
 }
 
 model Status {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   statusName String
-
-  Staff Staff[]
+  Staff      Staff[]
 }
 
 model Role {
@@ -262,13 +260,13 @@ model Department {
 model UserRating {
   id             Int      @id @default(autoincrement())
   userId         Int
-  user           User     @relation(fields: [userId], references: [id])
   staffId        Int
-  staff          Staff    @relation(fields: [staffId], references: [id])
   rating         Float
   rattingComment String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  staff          Staff    @relation(fields: [staffId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
 
   @@map("userRatings")
 }
