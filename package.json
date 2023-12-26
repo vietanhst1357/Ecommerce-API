@@ -28,7 +28,7 @@
     "pretest:e2e": "npm run db:test:restart",
     "test:e2e": "dotenv -e .env.test -- jest --watchAll --no-cache --config ./test/jest-e2e.json",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && tsc && prisma db push"
+    "vercel-build": "prisma generate && nest build && prisma db push"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
