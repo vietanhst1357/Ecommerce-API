@@ -22,5 +22,6 @@
           "TRACE"
         ]
       }
-    ]
+    ],
+    "buildCommand": "npm run vercel-build"
   }
