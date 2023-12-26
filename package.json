@@ -14,7 +14,6 @@
     "db:test:rm": "docker compose rm test-db -s -f -v",
     "db:test:up": "docker compose up test-db -d",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up && timeout /t 1 /nobreak > NUL && npm run prisma:test:deploy",
-    // "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
